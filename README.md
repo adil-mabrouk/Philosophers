@@ -1,2 +1,0 @@
-# Philosophers
-philosophers_42
