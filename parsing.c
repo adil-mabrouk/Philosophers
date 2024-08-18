@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 19:56:28 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/08/12 16:27:18 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/08/17 16:42:56 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ size_t	ft_atol(char *s)
 
 	number = 0;
 	s = check_input(s);
-	// printf("\nhere\n");
 	while (is_digit(*s))
 		number = number * 10 + *s++ - '0';
 	if (number > INT_MAX)
@@ -61,13 +60,9 @@ size_t	ft_atol(char *s)
 void	parse_input(t_args *args, char **av)
 {
 	args->philo_n = ft_atol(av[1]);
-	args->time_to_die = ft_atol(av[2]) * 1e3;
-	args->time_to_eat = ft_atol(av[3]) * 1e3;
-	args->time_to_sleep = ft_atol(av[4]) *1e3;
-	if (args->time_to_die < 6e4
-		|| args->time_to_eat < 6e4
-		|| args->time_to_sleep < 6e4)
-		exit_with_error("use timestamps major than 60ms");
+	args->time_to_die = ft_atol(av[2]);
+	args->time_to_eat = ft_atol(av[3]);
+	args->time_to_sleep = ft_atol(av[4]);
 	if (av[5])
 		args->n_lim_meals = ft_atol(av[5]);
 	else

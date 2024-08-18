@@ -6,14 +6,14 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 12:25:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/08/12 10:41:40 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/08/17 16:43:05 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	exit_with_error(char *str)
+int	exit_with_error(char *str)
 {
 	printf("%s\n", str);
-	exit(1);
+	return (1);
 }
