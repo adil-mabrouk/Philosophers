@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/08/17 17:41:06 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/08/20 16:01:00 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,13 @@ typedef struct s_args
 	size_t			time_to_sleep;
 	size_t			time_to_eat;
 	size_t			n_lim_meals;
-	size_t			last_meal_t;
 	size_t			start_time;
 	int				dead;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
 	pthread_mutex_t	print_mutex;
+	pthread_mutex_t	dead_mutex;
+	pthread_t		monitor_thread;
 }			t_args;
 
 
@@ -47,6 +48,8 @@ typedef	struct s_philo
 	pthread_t		thread_id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	last_m;
+	pthread_mutex_t	counter_mutex;
 	t_args		*args;
 }			t_philo;
 

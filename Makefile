@@ -6,15 +6,15 @@
 #    By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/17 14:45:46 by amabrouk          #+#    #+#              #
-#    Updated: 2024/08/17 14:59:54 by amabrouk         ###   ########.fr        #
+#    Updated: 2024/08/31 02:12:20 by amabrouk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
-CC = cc
+CC = cc -fsanitize=thread -g
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror # -fsanitize=thread -g
 
 SRC = philo.c parsing.c utils.c
 
