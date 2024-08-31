@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/08/31 02:24:27 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/01 00:44:01 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,19 @@ size_t	get_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-int	ft_usleep(size_t milliseconds, t_args args)
+int	ft_usleep(size_t milliseconds, t_args *args)
 {
 	size_t	start;
 
-	if (args.dead == 1)
-		return (0);
 	start = get_time();
 	while ((get_time() - start) < milliseconds)
+	{
+		pthread_mutex_lock(&args->dead_mutex);
+		if (args->dead == 1)
+			return (pthread_mutex_unlock(&args->dead_mutex), 0);
+		pthread_mutex_unlock(&args->dead_mutex);
 		usleep(500);
+	}
 	return (0);
 }
 
@@ -42,17 +46,18 @@ void	*monitor(t_args *args)
 		i = -1;
 		while (++i < args->philo_n)
 		{
-			// if (args->n_lim_meals <= args->philos[i].meals_counter)
-			// 	return ;
+			pthread_mutex_lock(&args->all_m_e);
+			if (args->n_lim_meals <= args->philos[i].meals_counter)
+				return (NULL);
 			pthread_mutex_lock(&args->philos[i].last_m);
 			if (get_time() - args->philos[i].last_meal_time >= args->time_to_die)
 			{
 				pthread_mutex_lock(&args->print_mutex);
-				printf("%zu %d died\n", get_time() - args->start_time, args->philos[i].id);
-				pthread_mutex_unlock(&args->print_mutex);
 				pthread_mutex_lock(&args->dead_mutex);
 				args->dead = 1;
 				pthread_mutex_unlock(&args->dead_mutex);
+				printf("%zu %d died\n", get_time() - args->start_time, args->philos[i].id);
+				pthread_mutex_unlock(&args->print_mutex);
 				pthread_mutex_unlock(&args->philos[i].last_m);
 				return (NULL);
 			}
@@ -61,15 +66,6 @@ void	*monitor(t_args *args)
 	}
 	return (NULL);
 }
-
-void	*dead_quit(t_args *args, t_philo *philo)
-{
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-	pthread_mutex_unlock(&args->dead_mutex);
-	return (NULL);
-}
-
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -78,59 +74,58 @@ void	*routine(void *arg)
 	philo = (t_philo *)arg;
 	args = philo->args;
 	if (philo->id % 2 != 0)
-		ft_usleep(args->time_to_eat / 2, *args);
+		ft_usleep(args->time_to_eat / 2, args);
 	while (1)
 	{
-		pthread_mutex_lock(&args->dead_mutex);
-		if (args->dead == 1)
-			return (dead_quit(args, philo));
-		pthread_mutex_unlock(&args->dead_mutex);
 		pthread_mutex_lock(philo->left_fork);
 		pthread_mutex_lock(&args->print_mutex);
-		printf("%zu %d has taken a fork\n", get_time() - args->start_time, philo->id);
-		pthread_mutex_unlock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
 		if (args->dead == 1)
-			return (dead_quit(args, philo));
+			return (pthread_mutex_unlock(philo->left_fork),pthread_mutex_unlock(&args->print_mutex),pthread_mutex_unlock(&args->dead_mutex), NULL);
+		printf("%zu %d has taken a fork\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->dead_mutex);
+		pthread_mutex_unlock(&args->print_mutex);
 		pthread_mutex_lock(philo->right_fork);
 		pthread_mutex_lock(&args->print_mutex);
-		printf("%zu %d has taken a fork\n", get_time() - args->start_time, philo->id);
-		pthread_mutex_unlock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
 		if (args->dead == 1)
-			return (dead_quit(args, philo));
+			return (pthread_mutex_unlock(philo->right_fork),pthread_mutex_unlock(&args->print_mutex), pthread_mutex_unlock(&args->dead_mutex), NULL);
+		printf("%zu %d has taken a fork\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->dead_mutex);
-		pthread_mutex_lock(&args->print_mutex);
-		printf("%zu %d is eating\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->print_mutex);
-		ft_usleep(args->time_to_eat, *args);
-		pthread_mutex_unlock(philo->left_fork);
-		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_lock(&args->philos[philo->id - 1].last_m);
 		args->philos[philo->id - 1].last_meal_time = get_time();
 		pthread_mutex_unlock(&args->philos[philo->id - 1].last_m);
-		pthread_mutex_lock(&args->dead_mutex);
-		if (args->dead == 1)
-			return (dead_quit(args, philo));
-		pthread_mutex_unlock(&args->dead_mutex);
 		pthread_mutex_lock(&args->print_mutex);
-		printf("%zu %d is sleeping\n", get_time() - args->start_time, philo->id);
-		pthread_mutex_unlock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
 		if (args->dead == 1)
-			return (dead_quit(args, philo));
+			return (pthread_mutex_unlock(&args->print_mutex), pthread_mutex_unlock(&args->dead_mutex), pthread_mutex_unlock(philo->left_fork), pthread_mutex_unlock(philo->right_fork), NULL);
+		printf("%zu %d is eating\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->dead_mutex);
-		ft_usleep(args->time_to_sleep, *args);
-		pthread_mutex_lock(&args->dead_mutex);
-		if (args->dead == 1)
-			return (dead_quit(args, philo));
-		pthread_mutex_unlock(&args->dead_mutex);
-		pthread_mutex_lock(&args->print_mutex);
-		printf("%zu %d is thinking\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->print_mutex);
+		ft_usleep(args->time_to_eat, args);
+		pthread_mutex_lock(&philo->last_m);
+		if (args->n_lim_meals <= args->all_meals_eaten)
+				return (pthread_mutex_unlock(&philo->last_m), NULL);
+		philo->meals_counter++;
+		pthread_mutex_unlock(&philo->last_m);
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_lock(&args->print_mutex);
+		pthread_mutex_lock(&args->dead_mutex);
+		if (args->dead == 1)
+			return (pthread_mutex_unlock(&args->print_mutex), pthread_mutex_unlock(&args->dead_mutex), NULL);
+		printf("%zu %d is sleeping\n", get_time() - args->start_time, philo->id);
+		pthread_mutex_unlock(&args->dead_mutex);
+		pthread_mutex_unlock(&args->print_mutex);
+		ft_usleep(args->time_to_sleep, args);
+		pthread_mutex_lock(&args->print_mutex);
+		pthread_mutex_lock(&args->dead_mutex);
+		if (args->dead == 1)
+			return (pthread_mutex_unlock(&args->print_mutex) ,pthread_mutex_unlock(&args->dead_mutex) ,NULL);
+		printf("%zu %d is thinking\n", get_time() - args->start_time, philo->id);
+		pthread_mutex_unlock(&args->dead_mutex);
+		pthread_mutex_unlock(&args->print_mutex);
 	}
 	return (NULL);
 }
@@ -158,6 +153,7 @@ int	main(int ac, char **av)
 		pthread_mutex_init(&args->philos->counter_mutex, NULL);
 		args->start_time = get_time();
 		args->dead = 0;
+		args->all_meals_eaten = 0;
 		i = -1;
 		while (++i < args->philo_n)
 		{
@@ -168,12 +164,7 @@ int	main(int ac, char **av)
 			args->philos[i].left_fork = &args->forks[(i + 1) % args->philo_n];
 			args->philos[i].args = args;
 			pthread_mutex_init(&args->philos[i].last_m, NULL);
-		}
-		i = -1;
-		while (++i < args->philo_n)
-		{
-			if (pthread_mutex_init(&args->forks[i], NULL))
-				return (1);
+			pthread_mutex_init(&args->forks[i], NULL);
 		}
 		i = -1;
 		while (++i < args->philo_n)
