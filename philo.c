@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/02 02:06:32 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/02 23:01:51 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,8 @@ void	*routine(void *arg)
 		ft_usleep(args->time_to_eat / 2, args);
 	while (1)
 	{
-		pthread_mutex_lock(philo->left_fork);
+		if (args->philo_n > 1)
+			pthread_mutex_lock(philo->left_fork);
 		pthread_mutex_lock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
 		if (args->dead == 1)
@@ -99,6 +100,8 @@ void	*routine(void *arg)
 		printf("%zu %d has taken a fork\n", get_time() - args->start_time, philo->id);
 		pthread_mutex_unlock(&args->dead_mutex);
 		pthread_mutex_unlock(&args->print_mutex);
+		if (args->philo_n == 1)
+			args->dead = 1;
 		pthread_mutex_lock(philo->right_fork);
 		pthread_mutex_lock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
@@ -146,22 +149,6 @@ void	*routine(void *arg)
 	return (NULL);
 }
 
-void	*rout_for_one(void *arg)
-{
-	t_philo *philo;
-	t_args *args;
-
-	philo = (t_philo *)arg;
-	args = philo->args;
-	pthread_mutex_lock(philo->left_fork);
-	pthread_mutex_lock(&args->print_mutex);
-	printf("%zu 1 has taken a fork\n", get_time() - args->start_time);
-	pthread_mutex_unlock(philo->left_fork);
-	printf("%zu 1 died\n", get_time() - args->start_time);
-	pthread_mutex_unlock(&args->print_mutex);
-	return (NULL);
-}
-
 int	main(int ac, char **av)
 {
 	t_args	*args;
@@ -186,18 +173,6 @@ int	main(int ac, char **av)
 		args->dead = 0;
 		args->full_flag = 0;
 		args->all_meals_eaten = 0;
-		if (args->philo_n == 1)
-		{
-			if (pthread_create(&args->philos[0].thread_id, NULL, &rout_for_one, &args->philos[0]))
-				return (1);
-			if (pthread_join(args->philos[0].thread_id, NULL))
-				return (1);
-			pthread_mutex_destroy(&args->print_mutex);
-			free(args->forks);
-			free(args->philos);
-			free(args);
-			return (0);
-		}
 		i = 0;
 		while (i < args->philo_n)
 		{
