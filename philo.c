@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/01 00:44:01 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/02 02:06:32 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,26 @@ void	*monitor(t_args *args)
 
 	while (1)
 	{
-		i = -1;
-		while (++i < args->philo_n)
+		i = 0;
+		while (i < args->philo_n)
 		{
-			pthread_mutex_lock(&args->all_m_e);
+			pthread_mutex_lock(&args->philos[i].counter_mutex);
 			if (args->n_lim_meals <= args->philos[i].meals_counter)
-				return (NULL);
+			{
+				args->all_meals_eaten++;
+				if (args->all_meals_eaten >= args->philo_n)
+				{
+					pthread_mutex_unlock(&args->philos[i].counter_mutex);
+					pthread_mutex_lock(&args->full_mutex);
+					args->full_flag = 1;
+					pthread_mutex_unlock(&args->full_mutex);
+					return (NULL);
+				}
+				pthread_mutex_unlock(&args->philos[i].counter_mutex);
+			}
+			pthread_mutex_unlock(&args->philos[i].counter_mutex);
 			pthread_mutex_lock(&args->philos[i].last_m);
-			if (get_time() - args->philos[i].last_meal_time >= args->time_to_die)
+			if (get_time() - args->philos[i].last_meal_time > args->time_to_die)
 			{
 				pthread_mutex_lock(&args->print_mutex);
 				pthread_mutex_lock(&args->dead_mutex);
@@ -62,10 +74,12 @@ void	*monitor(t_args *args)
 				return (NULL);
 			}
 			pthread_mutex_unlock(&args->philos[i].last_m);
+			i++;
 		}
 	}
 	return (NULL);
 }
+
 void	*routine(void *arg)
 {
 	t_philo	*philo;
@@ -104,13 +118,15 @@ void	*routine(void *arg)
 		pthread_mutex_unlock(&args->dead_mutex);
 		pthread_mutex_unlock(&args->print_mutex);
 		ft_usleep(args->time_to_eat, args);
-		pthread_mutex_lock(&philo->last_m);
-		if (args->n_lim_meals <= args->all_meals_eaten)
-				return (pthread_mutex_unlock(&philo->last_m), NULL);
+		pthread_mutex_lock(&philo->counter_mutex);
 		philo->meals_counter++;
-		pthread_mutex_unlock(&philo->last_m);
+		pthread_mutex_unlock(&philo->counter_mutex);
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_lock(&args->full_mutex);
+		if (args->full_flag == 1)
+			return (pthread_mutex_unlock(&args->full_mutex), NULL);
+		pthread_mutex_unlock(&args->full_mutex);
 		pthread_mutex_lock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);
 		if (args->dead == 1)
@@ -127,6 +143,22 @@ void	*routine(void *arg)
 		pthread_mutex_unlock(&args->dead_mutex);
 		pthread_mutex_unlock(&args->print_mutex);
 	}
+	return (NULL);
+}
+
+void	*rout_for_one(void *arg)
+{
+	t_philo *philo;
+	t_args *args;
+
+	philo = (t_philo *)arg;
+	args = philo->args;
+	pthread_mutex_lock(philo->left_fork);
+	pthread_mutex_lock(&args->print_mutex);
+	printf("%zu 1 has taken a fork\n", get_time() - args->start_time);
+	pthread_mutex_unlock(philo->left_fork);
+	printf("%zu 1 died\n", get_time() - args->start_time);
+	pthread_mutex_unlock(&args->print_mutex);
 	return (NULL);
 }
 
@@ -149,44 +181,61 @@ int	main(int ac, char **av)
 			return (1);
 		pthread_mutex_init(&args->print_mutex, NULL);
 		pthread_mutex_init(&args->dead_mutex, NULL);
-		pthread_mutex_init(&args->philos->last_m, NULL);
-		pthread_mutex_init(&args->philos->counter_mutex, NULL);
+		pthread_mutex_init(&args->full_mutex, NULL);
 		args->start_time = get_time();
 		args->dead = 0;
+		args->full_flag = 0;
 		args->all_meals_eaten = 0;
-		i = -1;
-		while (++i < args->philo_n)
+		if (args->philo_n == 1)
+		{
+			if (pthread_create(&args->philos[0].thread_id, NULL, &rout_for_one, &args->philos[0]))
+				return (1);
+			if (pthread_join(args->philos[0].thread_id, NULL))
+				return (1);
+			pthread_mutex_destroy(&args->print_mutex);
+			free(args->forks);
+			free(args->philos);
+			free(args);
+			return (0);
+		}
+		i = 0;
+		while (i < args->philo_n)
 		{
 			args->philos[i].id = i + 1;
 			args->philos[i].meals_counter = 0;
 			args->philos[i].last_meal_time = get_time();
+			pthread_mutex_init(&args->forks[i], NULL);
+			pthread_mutex_init(&args->forks[(i + 1) % args->philo_n], NULL);
 			args->philos[i].right_fork = &args->forks[i];
 			args->philos[i].left_fork = &args->forks[(i + 1) % args->philo_n];
 			args->philos[i].args = args;
+			pthread_mutex_init(&args->philos[i].counter_mutex, NULL);
 			pthread_mutex_init(&args->philos[i].last_m, NULL);
-			pthread_mutex_init(&args->forks[i], NULL);
+			pthread_mutex_init(&args->forks[i++], NULL);
 		}
-		i = -1;
-		while (++i < args->philo_n)
+		i = 0;
+		while (i < args->philo_n)
 		{
 			if (pthread_create(&args->philos[i].thread_id, NULL, &routine, &args->philos[i]))
 				return (1);
+			i++;
 		}
-		i = -1;
+		i = 0;
 		if (pthread_create(&args->monitor_thread, NULL, (void *)monitor, args))
 			return (1);
-		while (++i < args->philo_n)
+		while (i < args->philo_n)
 		{
-			if (pthread_join(args->philos[i].thread_id, NULL))
+			if (pthread_join(args->philos[i++].thread_id, NULL))
 				return (1);
 		}
 		if (pthread_join(args->monitor_thread, NULL))
 			return (1);
-		i = -1;
-		while (++i < args->philo_n)
+		i = 0;
+		while (i < args->philo_n)
 		{
 			pthread_mutex_destroy(&args->forks[i]);
 			pthread_mutex_destroy(&args->philos[i].last_m);
+			i++;
 		}
 		pthread_mutex_destroy(&args->print_mutex);
 		pthread_mutex_destroy(&args->dead_mutex);

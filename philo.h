@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/01 00:45:03 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/02 02:01:54 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_args
 	size_t			all_meals_eaten;
 	size_t			start_time;
 	int				dead;
+	int				full_flag;
+	pthread_mutex_t	full_mutex;
 	pthread_mutex_t	all_m_e;
 	pthread_mutex_t	*forks;
 	t_philo			*philos;
