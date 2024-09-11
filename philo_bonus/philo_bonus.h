@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/08 21:31:41 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/11 16:51:39 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <limits.h>
 # include <stdlib.h>
 # include <sys/time.h>
+# include <signal.h>
 
 typedef struct s_philo	t_philo;
 
@@ -30,14 +31,14 @@ typedef struct s_args
 	size_t			time_to_sleep;
 	size_t			time_to_eat;
 	size_t			n_lim_meals;
-	size_t			all_meals_eaten;
 	size_t			start;
 	int				dead;
+	int				status;
 	int				full_flag;
 	sem_t			*forks;
 	t_philo			*philos;
+	int				index;
 	sem_t			*print_sem;
-	sem_t			*dead_sem;
 	pthread_t		monitor_thread;
 }			t_args;
 
@@ -53,7 +54,7 @@ typedef struct s_philo
 void	parse_input(t_args *args, char **av);
 
 void	routine(t_args *arg, t_philo *philo);
-void	*monitor(t_args *args);
+void	*monitor(void *argss);
 int		ft_usleep(size_t milliseconds, t_args *args);
 size_t	get_time(void);
 

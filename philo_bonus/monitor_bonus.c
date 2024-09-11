@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:10:46 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/07 18:12:38 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/11 16:48:49 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,33 +17,25 @@ int	is_dead(t_args *args, t_philo *philo)
 	if (get_time() - philo->last_meal_time > args->time_to_die)
 	{
 		args->dead = 1;
+		sem_wait(args->print_sem);
 		printf("%zu %d died\n", get_time() - args->start, philo->id);
-		return (1);
+		sem_post(args->print_sem);
+		exit(1);
 	}
 	return (0);
 }
 
-void	*monitor(t_args *args)
+void	*monitor(void *argss)
 {
-	size_t	i;
+	t_args *args = (t_args *)argss;
 
 	while (1)
 	{
-		i = -1;
-		while (++i < args->philo_n)
-		{
-			if (args->n_lim_meals <= args->philos[i].meals_counter)
-			{
-				args->all_meals_eaten++;
-				if (args->all_meals_eaten >= args->philo_n)
-				{
-					args->full_flag = 1;
-					return (NULL);
-				}
-			}
-			if (is_dead(args, &args->philos[i]))
-				return (NULL);
-		}
+		usleep(100);
+		if (args->philos[args->index].meals_counter >= args->n_lim_meals)
+			exit(0);
+		if (is_dead(args, args->philos + args->index))
+			break ;
 	}
-	return (NULL);
+	exit(1);
 }

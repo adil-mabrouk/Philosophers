@@ -57,6 +57,13 @@
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
   "files.associations": {
-    "__mutex_base": "cpp"
+    "__mutex_base": "cpp",
+    "__config": "c",
+    "__tuple": "c",
+    "chrono": "c",
+    "ios": "c",
+    "string": "c",
+    "vector": "c",
+    "__threading_support": "c"
   }
 }

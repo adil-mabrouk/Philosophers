@@ -6,7 +6,7 @@
 #    By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/17 14:45:46 by amabrouk          #+#    #+#              #
-#    Updated: 2024/09/07 18:17:17 by amabrouk         ###   ########.fr        #
+#    Updated: 2024/09/09 19:58:45 by amabrouk         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ SRC = philo_bonus.c parsing_bonus.c utils_bonus.c routine_bonus.c monitor_bonus.
 
 OBJ = $(SRC:.c=.o)
 
-all: $(NAME)
+all: $(NAME) clean
 
 $(NAME): $(OBJ) philo_bonus.h
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
