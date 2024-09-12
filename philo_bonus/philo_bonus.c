@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/11 17:00:34 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 00:47:33 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@ void	data_init(t_args *args)
 
 	sem_unlink("forks");
 	sem_unlink("print_sem");
+	sem_unlink("last_m_sem");
 	args->forks = sem_open("forks", O_CREAT, 0644, args->philo_n);
 	args->print_sem = sem_open("print_sem", O_CREAT, 0644, 1);
+	args->dead_sem = sem_open("last_m_sem", O_CREAT, 0644, 1);
 	args->dead = 0;
 	args->status = 0;
-	args->print_sem = NULL;
-	args->forks = NULL;
 	i = -1;
 	while (++i < args->philo_n)
 	{
@@ -31,6 +31,10 @@ void	data_init(t_args *args)
 		args->philos[i].pid = -1;
 		args->philos[i].meals_counter = 0;
 		args->philos[i].args = args;
+		args->start = get_time();
+		sem_wait(args->last_m_sem);
+		args->philos[i].last_meal_time = get_time();
+		sem_post(args->last_m_sem);
 	}
 }
 
@@ -39,41 +43,30 @@ int	create_processes(t_args *args)
 	size_t	i;
 
 	i = -1;
-	args->start = get_time();
 	while (++i < args->philo_n)
 	{
-		args->philos[i].last_meal_time = get_time();
 		args->philos[i].pid = fork();
 		if (args->philos[i].pid == 0)
 		{
 			routine(args, &args->philos[i]);
-			exit (0);
+
 		}
 		else if (args->philos[i].pid < 0)
-			exit(1);
+		{
+			printf("Error: fork failed\n");
+			return (1);
+		}
 	}
 	return (1);
-}
-
-void	close_all(t_args *args)
-{
-	size_t	i;
-
-	i = -1;
-	while (++i < args->philo_n)
-		kill(args->philos[i].pid, SIGKILL);
-	sem_close(args->forks);
-	sem_close(args->print_sem);
-	sem_unlink("forks");
-	sem_unlink("print_sem");
 }
 
 int	main(int ac, char **av)
 {
 	t_args	*args;
-	size_t		i;
+	size_t	i;
+	int	status;
 
-	i = 0;
+	i = -1;
 	args = malloc(sizeof(t_args));
 	if (!args)
 		return (1);
@@ -86,13 +79,23 @@ int	main(int ac, char **av)
 		data_init(args);
 		if (!create_processes(args))
 			return (1);
-		while (i < args->philo_n)
+		while (++i < args->philo_n)
 		{
-			waitpid(-1, &args->status, 0);
-			if (args->status)
-				close_all(args);
-			i++;
+			waitpid(-1, &status, 0);
+			
+			if (WEXITSTATUS(status))
+			{
+				
+				i = -1;
+				while (++i < args->philo_n)
+					kill(args->philos[i].pid, SIGKILL);
+				break ;
+			}
 		}
+		sem_close(args->forks);
+		sem_close(args->print_sem);
+		sem_unlink("forks");
+		sem_unlink("print_sem");
 		free(args->philos);
 		free(args);
 	}
