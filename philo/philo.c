@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 19:53:31 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 22:04:29 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,8 +88,7 @@ int	main(int ac, char **av)
 	if (ac == 5 || ac == 6)
 	{
 		parse_input(args, av);
-		if (args->philo_n == 0 || args->time_to_die == 0
-			|| args->time_to_eat == 0 || args->time_to_sleep == 0)
+		if (tiny_check(*args))
 			return (free(args), 1);
 		args->forks = malloc(sizeof(pthread_mutex_t) * args->philo_n);
 		if (!args->forks)

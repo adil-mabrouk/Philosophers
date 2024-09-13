@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 19:56:28 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 21:24:31 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 21:55:54 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ char	*check_input(char *str)
 	char	*tmp;
 
 	tmp = str;
-	while (is_space(*tmp))
+	while (*tmp && is_space(*tmp))
 		tmp++;
+	if (!*tmp)
+		return (NULL);
 	if (*tmp == '+')
 		tmp++;
 	while (*tmp && is_digit(*tmp))
@@ -54,7 +56,7 @@ size_t	ft_atol(char *str)
 		printf("Error: Invalid argument\n");
 		return (0);
 	}
-	while (is_space(*str))
+	while (*str && is_space(*str))
 		str++;
 	if (*str == '+')
 		str++;
@@ -74,9 +76,17 @@ size_t	ft_atol(char *str)
 void	parse_input(t_args *args, char **av)
 {
 	args->philo_n = ft_atol(av[1]);
+	if (args->philo_n == 0)
+		return ;
 	args->time_to_die = ft_atol(av[2]);
+	if (args->time_to_die == 0)
+		return ;
 	args->time_to_eat = ft_atol(av[3]);
+	if (args->time_to_eat == 0)
+		return ;
 	args->time_to_sleep = ft_atol(av[4]);
+	if (args->time_to_sleep == 0)
+		return ;
 	if (av[5])
 		args->n_lim_meals = ft_atol(av[5]);
 	else

@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 19:53:02 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 21:53:10 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,8 +93,9 @@ int	main(int ac, char **av)
 	{
 		parse_input(args, av);
 		if (args->philo_n == 0 || args->time_to_die == 0
-			|| args->time_to_eat == 0 || args->time_to_sleep == 0)
-			return (free(args), 0);
+			|| args->time_to_eat == 0 || args->time_to_sleep == 0
+			|| (ac == 6 && args->n_lim_meals == 0))
+			return (free(args), 1);
 		args->philos = malloc(sizeof(t_philo) * args->philo_n);
 		if (!args->philos)
 			return (1);
