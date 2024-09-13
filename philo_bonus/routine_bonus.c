@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:24:35 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 01:41:04 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 01:47:06 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ int	is_take_forks(t_args *args, t_philo *philo)
 	printf("%zu %d has taken a fork\n",
 		get_time() - args->start, philo->id);
 	sem_post(args->print_sem);
-	if (args->philo_n == 1)
-		args->dead = 1;
 	sem_wait(args->forks);
 	sem_wait(args->print_sem);
 	printf("%zu %d has taken a fork\n", get_time() - args->start, philo->id);

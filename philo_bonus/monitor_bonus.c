@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:10:46 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 00:53:35 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 16:48:43 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,9 @@ int	is_dead(t_args *args, t_philo *philo)
 
 void	*monitor(void *argss)
 {
-	t_args *args = (t_args *)argss;
+	t_args	*args;
 
+	args = (t_args *)argss;
 	while (1)
 	{
 		if (args->philos[args->index].meals_counter >= args->n_lim_meals)

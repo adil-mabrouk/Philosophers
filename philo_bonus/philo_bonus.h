@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 00:07:42 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 16:46:18 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_args
 	size_t			n_lim_meals;
 	size_t			start;
 	int				dead;
-	int				status;
 	int				full_flag;
 	sem_t			*forks;
 	t_philo			*philos;

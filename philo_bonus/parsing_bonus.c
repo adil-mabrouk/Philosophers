@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 19:56:28 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/05 00:50:48 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 16:03:48 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,15 +32,16 @@ char	*check_input(char *s)
 		s++;
 	if (*s == '+')
 		s++;
-	else if (*s == '-')
-		error("only positive values");
-	if (!is_digit(*s))
-		error("Invalid input");
+	if (*s && !is_digit(*s))
+	{
+		printf("Invalid input\n");
+		return (NULL);
+	}
 	num = s;
 	while (*s++)
 		len++;
 	if (len > 10)
-		error("The vslue's too long");
+		error("The value's too long");
 	return (num);
 }
 
@@ -50,10 +51,17 @@ size_t	ft_atol(char *s)
 
 	number = 0;
 	s = check_input(s);
-	while (is_digit(*s))
+	if (!s)
+		return (0);
+	while (*s && is_digit(*s))
 		number = number * 10 + *s++ - '0';
+	if (*s && !is_digit(*s))
+	{
+		printf("Invalid input\n");
+		return (0);
+	}
 	if (number > INT_MAX)
-		error("The vslue's too long");
+		error("The value's too long");
 	return (number);
 }
 
