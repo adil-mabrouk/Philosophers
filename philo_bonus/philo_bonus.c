@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 00:47:33 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 01:31:51 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,6 @@ void	data_init(t_args *args)
 		args->philos[i].meals_counter = 0;
 		args->philos[i].args = args;
 		args->start = get_time();
-		sem_wait(args->last_m_sem);
-		args->philos[i].last_meal_time = get_time();
-		sem_post(args->last_m_sem);
 	}
 }
 
@@ -45,12 +42,12 @@ int	create_processes(t_args *args)
 	i = -1;
 	while (++i < args->philo_n)
 	{
+		sem_wait(args->last_m_sem);
+		args->philos[i].last_meal_time = get_time();
+		sem_post(args->last_m_sem);
 		args->philos[i].pid = fork();
 		if (args->philos[i].pid == 0)
-		{
 			routine(args, &args->philos[i]);
-
-		}
 		else if (args->philos[i].pid < 0)
 		{
 			printf("Error: fork failed\n");
@@ -85,7 +82,6 @@ int	main(int ac, char **av)
 			
 			if (WEXITSTATUS(status))
 			{
-				
 				i = -1;
 				while (++i < args->philo_n)
 					kill(args->philos[i].pid, SIGKILL);
@@ -94,8 +90,10 @@ int	main(int ac, char **av)
 		}
 		sem_close(args->forks);
 		sem_close(args->print_sem);
+		sem_close(args->last_m_sem);
 		sem_unlink("forks");
 		sem_unlink("print_sem");
+		sem_unlink("last_m_sem");
 		free(args->philos);
 		free(args);
 	}

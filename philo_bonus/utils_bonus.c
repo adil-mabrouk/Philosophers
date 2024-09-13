@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 12:25:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 00:39:35 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 00:59:53 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	ft_usleep(size_t milliseconds, t_args *args)
 	{
 		if (args->dead == 1)
 			return (0);
-		usleep(100);
+		usleep(500);
 	}
 	return (0);
 }

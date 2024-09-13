@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:24:35 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 00:51:22 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 01:41:04 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ void	*routine(t_args *args, t_philo *philo)
 	pthread_create(&args->monitor_thread, NULL, (void *)monitor, args);
 	pthread_detach(args->monitor_thread);
 	if (philo->id % 2 == 0)
-		usleep(1000);
-	while (args->dead == 0)
+		usleep(100);
+	while (1)
 	{
 		if (!is_take_forks(args, philo))
 			break ;
