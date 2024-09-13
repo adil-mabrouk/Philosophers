@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 21:53:10 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 22:30:47 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,6 @@ void	data_init(t_args *args)
 	sem_unlink("last_m_sem");
 	args->forks = sem_open("forks", O_CREAT, 0644, args->philo_n);
 	args->print_sem = sem_open("print_sem", O_CREAT, 0644, 1);
-	args->dead_sem = sem_open("last_m_sem", O_CREAT, 0644, 1);
-	args->dead = 0;
 	i = -1;
 	while (++i < args->philo_n)
 	{
