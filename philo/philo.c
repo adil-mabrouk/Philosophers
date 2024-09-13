@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:41:48 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:53:31 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ int	main(int ac, char **av)
 		parse_input(args, av);
 		if (args->philo_n == 0 || args->time_to_die == 0
 			|| args->time_to_eat == 0 || args->time_to_sleep == 0)
-			return (free(args), 0);
+			return (free(args), 1);
 		args->forks = malloc(sizeof(pthread_mutex_t) * args->philo_n);
 		if (!args->forks)
 			return (1);
@@ -103,6 +103,6 @@ int	main(int ac, char **av)
 		destroy_and_free(args);
 	}
 	else
-		error("wrong number of arguments");
+		printf("wrong number of arguments");
 	return (0);
 }

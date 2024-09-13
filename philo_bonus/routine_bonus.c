@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:24:35 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 01:47:06 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:48:43 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	is_eating(t_args *args, t_philo *philo)
 	sem_wait(args->last_m_sem);
 	philo->last_meal_time = get_time();
 	sem_post(args->last_m_sem);
-	ft_usleep(args->time_to_eat, args);
+	ft_usleep(args->time_to_eat);
 	sem_post(args->forks);
 	sem_post(args->forks);
 	philo->meals_counter++;
@@ -46,7 +46,7 @@ int	is_sleeping(t_args *args, t_philo *philo)
 	sem_wait(args->print_sem);
 	printf("%zu %d is sleeping\n", get_time() - args->start, philo->id);
 	sem_post(args->print_sem);
-	ft_usleep(args->time_to_sleep, args);
+	ft_usleep(args->time_to_sleep);
 	return (1);
 }
 
@@ -61,8 +61,11 @@ int	is_thinking(t_args *args, t_philo *philo)
 void	*routine(t_args *args, t_philo *philo)
 {
 	args->index = philo->id - 1;
-	pthread_create(&args->monitor_thread, NULL, (void *)monitor, args);
-	pthread_detach(args->monitor_thread);
+	if (pthread_create(&args->monitor_thread, NULL,
+			(void *)monitor, args) == -1)
+		exit(1);
+	if (pthread_detach(args->monitor_thread) == -1)
+		exit(1);
 	if (philo->id % 2 == 0)
 		usleep(100);
 	while (1)

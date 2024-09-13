@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:46:18 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:53:40 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,9 +56,7 @@ void	parse_input(t_args *args, char **av);
 
 void	*routine(t_args *arg, t_philo *philo);
 void	*monitor(void *argss);
-int		ft_usleep(size_t milliseconds, t_args *args);
+int		ft_usleep(size_t milliseconds);
 size_t	get_time(void);
-
-int		error(char *str);
 
 #endif

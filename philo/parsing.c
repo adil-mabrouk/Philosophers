@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 19:56:28 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:38:47 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 21:22:33 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,47 +22,53 @@ int	is_space(char c)
 	return (c == 32 || (c >= 9 && c <= 13));
 }
 
-char	*check_input(char *s)
+char	*check_input(char *str)
 {
-	char	*num;
-	int		len;
+	char	*tmp;
 
-	len = 0;
-	while (is_space(*s))
-		s++;
-	if (*s == '+')
-		s++;
-	if (*s && !is_digit(*s))
+	tmp = str;
+	while (is_space(*tmp))
+		tmp++;
+	if (*tmp == '+')
+		tmp++;
+	while (*tmp && is_digit(*tmp))
+		tmp++;
+	while (*tmp)
 	{
-		printf("Invalid input\n");
-		return (NULL);
+		if (!is_space(*tmp))
+			return (NULL);
+		tmp++;
 	}
-	num = s;
-	while (*s++)
-		len++;
-	if (len > 10)
-		error("The value's too long");
-	return (num);
+	if (!*tmp)
+		return (str);
+	return (NULL);
 }
 
-size_t	ft_atol(char *s)
+size_t	ft_atol(char *str)
 {
-	size_t	number;
+	size_t	result;
 
-	number = 0;
-	s = check_input(s);
-	if (!s)
-		return (0);
-	while (*s && is_digit(*s))
-		number = number * 10 + *s++ - '0';
-	if (*s && !is_digit(*s))
+	result = 0;
+	if (!check_input(str))
 	{
-		printf("Invalid input\n");
+		printf("Error: Invalid argument\n");
 		return (0);
 	}
-	if (number > INT_MAX)
-		error("The value's too long");
-	return (number);
+	while (is_space(*str))
+		str++;
+	if (*str == '+')
+		str++;
+	while (str && is_digit(*str))
+	{
+		result = result * 10 + *str - '0';
+		if (result > INT_MAX)
+		{
+			printf("Error: Argument out of range\n");
+			return (0);
+		}
+		str++;
+	}
+	return (result);
 }
 
 void	parse_input(t_args *args, char **av)

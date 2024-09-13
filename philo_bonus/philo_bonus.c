@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:49:08 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:53:02 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,6 @@ int	main(int ac, char **av)
 		free(args);
 	}
 	else
-		error("wrong number of arguments");
+		printf("wrong number of arguments");
 	return (0);
 }

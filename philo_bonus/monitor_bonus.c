@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:10:46 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:48:43 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 17:09:12 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 int	is_dead(t_args *args, t_philo *philo)
 {
 	sem_wait(args->last_m_sem);
-	if (get_time() - philo->last_meal_time > args->time_to_die)
+	if (get_time() - philo->last_meal_time >= args->time_to_die)
 	{
 		sem_post(args->last_m_sem);
 		args->dead = 1;
 		sem_wait(args->print_sem);
 		printf("%zu %d died\n", get_time() - args->start, philo->id);
-		exit(1);
+		return (1);
 	}
 	sem_post(args->last_m_sem);
 	return (0);

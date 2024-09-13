@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/05 00:10:46 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 16:42:15 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 17:02:49 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int	is_dead(t_args *args, t_philo *philo)
 {
 	pthread_mutex_lock(&philo->last_m);
-	if (get_time() - philo->last_meal_time > args->time_to_die)
+	if (get_time() - philo->last_meal_time >= args->time_to_die)
 	{
 		pthread_mutex_lock(&args->print_mutex);
 		pthread_mutex_lock(&args->dead_mutex);

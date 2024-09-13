@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 14:12:55 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/05 00:42:42 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/13 19:52:43 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,5 @@ void	*routine(void *arg);
 void	*monitor(t_args *args);
 int		ft_usleep(size_t milliseconds, t_args *args);
 size_t	get_time(void);
-
-int		error(char *str);
 
 #endif
