@@ -6,7 +6,7 @@
 /*   By: amabrouk <amabrouk@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/10 11:32:27 by amabrouk          #+#    #+#             */
-/*   Updated: 2024/09/13 22:30:47 by amabrouk         ###   ########.fr       */
+/*   Updated: 2024/09/14 17:29:03 by amabrouk         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	create_processes(t_args *args)
 		else if (args->philos[i].pid < 0)
 		{
 			printf("Error: fork failed\n");
-			return (1);
+			return (0);
 		}
 	}
 	return (1);
@@ -84,11 +84,11 @@ int	main(int ac, char **av)
 {
 	t_args	*args;
 
-	args = malloc(sizeof(t_args));
-	if (!args)
-		return (1);
 	if (ac == 5 || ac == 6)
 	{
+		args = malloc(sizeof(t_args));
+		if (!args)
+			return (1);
 		parse_input(args, av);
 		if (args->philo_n == 0 || args->time_to_die == 0
 			|| args->time_to_eat == 0 || args->time_to_sleep == 0
@@ -96,15 +96,15 @@ int	main(int ac, char **av)
 			return (free(args), 1);
 		args->philos = malloc(sizeof(t_philo) * args->philo_n);
 		if (!args->philos)
-			return (1);
+			return (free(args), 1);
 		data_init(args);
 		if (!create_processes(args))
-			return (1);
+			return (free(args->philos), free(args), 1);
 		kill_and_close(args);
 		free(args->philos);
 		free(args);
 	}
 	else
-		printf("wrong number of arguments");
+		printf("Error: Wrong number of arguments\n");
 	return (0);
 }
