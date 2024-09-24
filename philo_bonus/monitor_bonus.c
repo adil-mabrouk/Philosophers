@@ -17,8 +17,8 @@ int	is_dead(t_args *args, t_philo *philo)
 	sem_wait(args->last_m_sem);
 	if (get_time() - philo->last_meal_time >= args->time_to_die)
 	{
-		sem_wait(args->print_sem);
 		printf("%zu %d died\n", get_time() - args->start, philo->id);
+		sem_post(args->last_m_sem);
 		return (1);
 	}
 	sem_post(args->last_m_sem);
@@ -33,8 +33,13 @@ void	*monitor(void *argss)
 	while (1)
 	{
 		usleep(100);
+		sem_wait(args->counter_sem);
 		if (args->philos[args->index].meals_counter >= args->n_lim_meals)
+		{
+			sem_post(args->counter_sem);
 			exit(0);
+		}
+		sem_post(args->counter_sem);
 		if (is_dead(args, args->philos + args->index))
 			exit(1);
 	}

@@ -14,7 +14,7 @@ NAME = philo_bonus
 
 CC = cc
 
-CFLAGS = -Wall -Wextra -Werror # -fsanitize=address -g
+CFLAGS = -Wall -Wextra -Werror -pthread -g # -fsanitize=thread -g
 
 SRC = philo_bonus.c parsing_bonus.c utils_bonus.c routine_bonus.c monitor_bonus.c
 

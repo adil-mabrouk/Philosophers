@@ -19,6 +19,8 @@
 # include <semaphore.h>
 # include <limits.h>
 # include <stdlib.h>
+# include <wait.h>
+# include <fcntl.h>
 # include <sys/time.h>
 # include <signal.h>
 
@@ -38,6 +40,7 @@ typedef struct s_args
 	int				index;
 	sem_t			*print_sem;
 	sem_t			*last_m_sem;
+	sem_t			*counter_sem;
 	pthread_t		monitor_thread;
 }			t_args;
 

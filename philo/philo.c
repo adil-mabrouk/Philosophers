@@ -89,7 +89,7 @@ int	main(int ac, char **av)
 			return (1);
 		parse_input(args, av);
 		if (tiny_check(*args))
-			return (free(args), 0);
+			return (free(args), 1);
 		args->forks = malloc(sizeof(pthread_mutex_t) * args->philo_n);
 		if (!args->forks)
 			return (free(args), 1);
@@ -102,6 +102,6 @@ int	main(int ac, char **av)
 		destroy_and_free(args);
 	}
 	else
-		printf("Error: Wrong number of arguments\n");
+		return (printf("Error: Wrong number of arguments\n"), 1);
 	return (0);
 }

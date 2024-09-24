@@ -37,7 +37,9 @@ int	is_eating(t_args *args, t_philo *philo)
 	ft_usleep(args->time_to_eat);
 	sem_post(args->forks);
 	sem_post(args->forks);
+	sem_wait(args->counter_sem);
 	philo->meals_counter++;
+	sem_post(args->counter_sem);
 	return (1);
 }
 

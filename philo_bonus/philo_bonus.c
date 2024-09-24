@@ -19,8 +19,11 @@ void	data_init(t_args *args)
 	sem_unlink("forks");
 	sem_unlink("print_sem");
 	sem_unlink("last_m_sem");
+	sem_unlink("counter_sem");
 	args->forks = sem_open("forks", O_CREAT, 0644, args->philo_n);
 	args->print_sem = sem_open("print_sem", O_CREAT, 0644, 1);
+	args->last_m_sem = sem_open("print_sem", O_CREAT, 0644, 1);
+	args->counter_sem = sem_open("counter_sem", O_CREAT, 0644, 1);
 	i = -1;
 	while (++i < args->philo_n)
 	{
@@ -75,9 +78,11 @@ void	kill_and_close(t_args *args)
 	sem_close(args->forks);
 	sem_close(args->print_sem);
 	sem_close(args->last_m_sem);
+	sem_close(args->counter_sem);
 	sem_unlink("forks");
 	sem_unlink("print_sem");
 	sem_unlink("last_m_sem");
+	sem_unlink("counter_sem");
 }
 
 int	main(int ac, char **av)
@@ -105,6 +110,6 @@ int	main(int ac, char **av)
 		free(args);
 	}
 	else
-		printf("Error: Wrong number of arguments\n");
+		return(printf("Error: Wrong number of arguments\n"), 1);
 	return (0);
 }
